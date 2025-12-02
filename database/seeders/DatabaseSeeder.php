@@ -17,18 +17,12 @@ class DatabaseSeeder extends Seeder
     {
         // Create two explicit users: admin and regular user
         // Password for both users: password
+        // Create only the administrator account. Regular users are not created by seeder.
         \App\Models\User::create([
             'name' => 'Administrator',
             'email' => 'admin',
             'password' => bcrypt('9999'),
             'role' => 'admin',
-        ]);
-
-        \App\Models\User::create([
-            'name' => 'Security',
-            'email' => 'security',
-            'password' => bcrypt('1111'),
-            'role' => 'user',
         ]);
 
         // Keep factory example commented

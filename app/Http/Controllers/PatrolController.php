@@ -64,46 +64,73 @@ class PatrolController extends Controller
 
     // Simpan Data
     public function store(Request $request)
-    {
-        try {
-            // Validasi sederhana
-            $validated = $request->validate([
-                'nama_anggota_1' => 'required',
-                'tanggal' => 'required',
-                'patrol_data' => 'required', // Ini string JSON dari frontend
-                'e_sign' => 'required',
-            ]);
+{
+    try {
+        $validated = $request->validate([
+            'nama_anggota_1' => 'required',
+            'tanggal' => 'required',
+            'patrol_data' => 'required',
+            'e_sign' => 'required',
+        ]);
 
-            // Parsing data dari format JS frontend
-            $patrolDetails = json_decode($request->patrol_data, true);
+        $patrolDetails = json_decode($request->patrol_data, true);
 
-            // Parsing tanda tangan (Nama|||Base64)
-            $signParts = explode('|||', $request->e_sign);
-            $esignName = $signParts[0];
-            $esignImage = isset($signParts[1]) ? $signParts[1] : '';
+        // ==============================
+        // PROSES TANDA TANGAN BASE64
+        // ==============================
+        $signParts = explode('|||', $request->e_sign);
+        $esignName = $signParts[0];
+        $base64Image = $signParts[1] ?? null;
 
-            Patrol::create([
-                'nama_anggota_1' => $request->nama_anggota_1,
-                'nama_anggota_2' => $request->nama_anggota_2,
-                'nama_anggota_3' => $request->nama_anggota_3,
-                'hari' => $request->hari,
-                'tanggal' => $request->tanggal,
-                'jam_dinas' => $request->jam_dinas,
-                'shift' => $request->shift,
-                'jabatan' => $request->jabatan,
-                'area' => $request->area,
-                'keterangan_absensi' => $request->keterangan_absensi,
-                'patrol_details' => $patrolDetails, // Laravel otomatis menjadikannya JSON
-                'esign_name' => $esignName,
-                'esign_image' => $esignImage,
-            ]);
+        $storedImage = null;
 
-            return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan']);
+        if ($base64Image) {
+            // Buang prefix seperti "data:image/png;base64,"
+            $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
+            $imageData = base64_decode($base64Image);
 
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+            // Nama file unik
+            $fileName = 'sign_' . time() . '.png';
+
+            // Pastikan direktori ada: storage/app/public/signatures
+            $dir = storage_path('app/public/signatures');
+            if (! is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+
+            // Simpan file ke disk
+            $fullPath = $dir . DIRECTORY_SEPARATOR . $fileName;
+            file_put_contents($fullPath, $imageData);
+
+            // Simpan hanya filename ke database
+            $storedImage = $fileName;
         }
+
+        Patrol::create([
+            'nama_anggota_1' => $request->nama_anggota_1,
+            'nama_anggota_2' => $request->nama_anggota_2,
+            'nama_anggota_3' => $request->nama_anggota_3,
+            'hari' => $request->hari,
+            'tanggal' => $request->tanggal,
+            'jam_dinas' => $request->jam_dinas,
+            'shift' => $request->shift,
+            'jabatan' => $request->jabatan,
+            'area' => $request->area,
+            'keterangan_absensi' => $request->keterangan_absensi,
+
+            'patrol_details' => $patrolDetails,
+
+            'esign_name' => $esignName,
+            'esign_image' => $storedImage, // FILE URL, BUKAN BASE64
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan']);
+
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
     }
+}
+
 
     // Hapus Data
     public function destroy($id)

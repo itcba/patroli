@@ -131,7 +131,8 @@
             </header>
             <div style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
                 <div class="card">
-                    <h2 style="margin-top:0;margin-bottom:10px;text-align:center">LOGIN</h2>
+                    <h2 style="margin-top:0;margin-bottom:6px;text-align:center">LOGIN</h2>
+                    <div class="muted" style="text-align:center;margin-bottom:10px;">Only administrator accounts can sign in here.</div>
                     <br>
                     @if($errors->any())
                         <div class="error">{{ $errors->first() }}</div>
@@ -148,11 +149,12 @@
                 </div>
             </div>
         </div>
-          <!-- Footer -->
-            <footer style="text-align:center;color:rgba(255,255,255,0.85);font-size:13px;padding:12px 0;margin-top:18px;">
-                © {{ date('Y') }} IT Pabrik CBA — Semua hak dilindungi.
-            </footer>
     </div>
+    <!-- Footer -->
+    <footer class="site-footer" aria-hidden="false" style="position:fixed;left:0;right:0;bottom:12px;display:flex;justify-content:center;pointer-events:auto;">
+        <div style="background: rgba(255,255,255,0.06); padding:8px 12px; border-radius:10px; color: rgba(255,255,255,0.92); font-size:13px;">
+            &copy; {{ date('Y') }} IT Pabrik CBA — Semua hak dilindungi.
+        </div>
+    </footer>
 </body>
-
 </html>
