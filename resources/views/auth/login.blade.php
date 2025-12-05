@@ -19,7 +19,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 'Helvetica Neue', Arial;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 'Helvetica Neu  e', Arial;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -93,7 +93,18 @@
             width: 100%;
             cursor: pointer;
             font-weight: 600;
-            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.24)
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.24);
+            transition: box-shadow 180ms ease, background 120ms ease;
+        }
+
+        .btn:hover {
+            /* shadow-only hover */
+            box-shadow: 0 14px 36px rgba(2,6,23,0.18);
+        }
+
+        .btn:focus {
+            outline: none;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.22);
         }
 
         .error {
@@ -129,10 +140,10 @@
                 <p id="companyName" style="color: rgba(255,255,255,0.95); font-size: 16px;">PT CBA Chemical Industry
                     Pabrik</p>
             </header>
-            <div style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
+            <div style="display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:12px;">
                 <div class="card">
                     <h2 style="margin-top:0;margin-bottom:6px;text-align:center">LOGIN</h2>
-                    <div class="muted" style="text-align:center;margin-bottom:10px;">Only administrator accounts can sign in here.</div>
+                    <div class="muted" style="text-align:center;margin-bottom:10px;">Hanya admin yang bisa login.</div>
                     <br>
                     @if($errors->any())
                         <div class="error">{{ $errors->first() }}</div>
@@ -146,6 +157,10 @@
                             autocomplete="current-password" />
                         <div style="margin-top:8px"><button class="btn" type="submit">Masuk</button></div>
                     </form>
+                </div>
+                <br>
+                <div style="text-align:center;">
+                    <a href="/" class="btn" style="background: #60a5fa; display:inline-block; text-decoration:none; width:220px; padding:10px 16px;">Isi Data Patroli</a>
                 </div>
             </div>
         </div>

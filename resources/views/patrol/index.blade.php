@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- Favicon: use the existing `public/favicon.ico` for reliable serving -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <title>Form Patroli Keamanan Security</title>
 
     {{-- Muat Tailwind & JS via Vite --}}
@@ -96,14 +98,35 @@
 
         .btn-primary:hover {
             background: var(--blue-600);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.18);
+            /* shadow-only hover: stronger shadow, no translation */
+            box-shadow: 0 16px 36px rgba(14, 58, 120, 0.18);
         }
 
         .btn-primary:disabled {
             background: #9ca3af;
             cursor: not-allowed;
             transform: none;
+        }
+
+        /* Stronger submit button shadow/hover specifically */
+        #submitBtn {
+            transition: box-shadow 180ms ease, transform 120ms ease;
+        }
+
+        #submitBtn:hover:not(:disabled) {
+            /* shadow-only hover for submit */
+            box-shadow: 0 18px 42px rgba(14, 58, 120, 0.20);
+        }
+
+        #submitBtn:active {
+            /* subtle active shadow */
+            box-shadow: 0 10px 26px rgba(14, 58, 120, 0.14);
+        }
+
+        #submitBtn:disabled {
+            transform: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+            cursor: not-allowed;
         }
 
         .btn-secondary {
@@ -120,6 +143,7 @@
 
         .btn-secondary:hover {
             background: #4b5563;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
         }
 
         .btn-danger {
@@ -136,6 +160,7 @@
 
         .btn-danger:hover {
             background: #dc2626;
+            box-shadow: 0 12px 28px rgba(92, 33, 33, 0.12);
         }
 
         .btn-info {
@@ -152,6 +177,7 @@
 
         .btn-info:hover {
             background: #0891b2;
+            box-shadow: 0 12px 28px rgba(6, 132, 153, 0.12);
         }
 
         .tab-button {
@@ -413,6 +439,18 @@
             display: block;
         }
 
+        /* Logout button in auth dropdown: subtle shadow and hover effect */
+        .auth-dropdown .btn-secondary,
+        .logout-btn {
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+            transition: box-shadow 0.18s ease, transform 0.12s ease;
+        }
+
+        .auth-dropdown .btn-secondary:hover,
+        .logout-btn:hover {
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+        }
+
         .guest-login {
             background: rgba(255, 255, 255, 0.12);
             color: white;
@@ -479,9 +517,9 @@
                                         {{ auth()->user()->role }}</div>
                                     <div
                                         style="border-top:1px solid #eef2ff; margin-top:6px; padding-top:8px; display:flex; gap:8px; justify-content:flex-end;">
-                                        <form method="POST" action="/logout" style="margin:0">
+                                            <form method="POST" action="/logout" style="margin:0">
                                             @csrf
-                                            <button type="submit" class="btn-secondary"
+                                            <button type="submit" class="btn-secondary logout-btn"
                                                 style="background:#f3f4f6;color:#111;padding:8px 12px;border-radius:6px;">Logout</button>
                                         </form>
                                     </div>
@@ -692,8 +730,8 @@
                             <label class="form-label" style="font-size: 12px;">Shift</label>
                             <select id="filterShift" class="form-select" onchange="filterAndRenderHistory()">
                                 <option value="">Semua Shift</option>
-                                <option value="Shift 1 (Pagi)">Shift 1 (07:00-19:00)</option>
-                                <option value="Shift 2 (Siang)">Shift 2 (19:00-07:00)</option>
+                                <option value="Shift 1">Shift 1 (07:00-19:00)</option>
+                                <option value="Shift 2">Shift 2 (19:00-07:00)</option>
                             </select>
                         </div>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap:8px; align-items: flex-end;">
