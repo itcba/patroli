@@ -168,7 +168,7 @@
     <!-- Footer -->
     <footer class="site-footer" aria-hidden="false" style="position:fixed;left:0;right:0;bottom:12px;display:flex;justify-content:center;pointer-events:auto;">
         <div style="background: rgba(255,255,255,0.06); padding:8px 12px; border-radius:10px; color: rgba(255,255,255,0.92); font-size:13px;">
-            &copy; {{ date('Y') }} IT Pabrik CBA — Semua hak dilindungi.
+            &copy; {{ date('Y') }} PT CBA Chemical Industry | Team IT Pabrik.
         </div>
     </footer>
 </body>

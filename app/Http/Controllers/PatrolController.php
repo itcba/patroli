@@ -71,6 +71,7 @@ class PatrolController extends Controller
             'tanggal' => 'required',
             'patrol_data' => 'required',
             'e_sign' => 'required',
+            'patrol_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar per entry
         ]);
 
         $patrolDetails = json_decode($request->patrol_data, true);
@@ -104,6 +105,29 @@ class PatrolController extends Controller
 
             // Simpan hanya filename ke database
             $storedImage = $fileName;
+        }
+
+        // ==============================
+        // PROSES GAMBAR PATROLI PER ENTRY
+        // ==============================
+        $patrolImages = $request->file('patrol_images', []);
+        foreach ($patrolDetails as $index => &$detail) {
+            $storedImage = null;
+            if (isset($patrolImages[$index]) && $patrolImages[$index]->isValid()) {
+                $image = $patrolImages[$index];
+                $fileName = 'patrol_' . time() . '_' . $index . '.' . $image->getClientOriginalExtension();
+
+                // Pastikan direktori ada: storage/app/public/patrols
+                $dir = storage_path('app/public/patrols');
+                if (! is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+
+                // Simpan file
+                $image->move($dir, $fileName);
+                $storedImage = $fileName;
+            }
+            $detail['gambar'] = $storedImage;
         }
 
         Patrol::create([

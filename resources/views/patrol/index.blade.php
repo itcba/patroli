@@ -655,6 +655,7 @@
                                     <div><label class="form-label">Jam Patroli Selesai *</label> <input type="time"
                                             class="form-input patrol-end" required></div>
                                 </div>
+                                <div style="margin-bottom: 16px;"><label class="form-label">Gambar Patroli</label> <input type="file" name="patrol_images[]" class="form-input patrol-image" accept="image/*"></div>
                                 <div style="margin-bottom: 16px;"><label class="form-label">Uraian Keterangan Patroli
                                         *</label> <textarea class="form-textarea patrol-uraian" required
                                         placeholder="Tuliskan laporan hasil patroli..."></textarea></div>
@@ -806,7 +807,7 @@
             <!-- Footer -->
             <footer
                 style="text-align:center;color:rgba(255,255,255,0.9);font-size:13px;padding:14px 0;margin-top:18px;">
-                © {{ date('Y') }} IT Pabrik CBA — Semua hak dilindungi.
+                © {{ date('Y') }} PT CBA Chemical Industry | Team IT Pabrik.
             </footer>
         </div>
     </div>
@@ -914,6 +915,7 @@
                     <div><label class="form-label">Jam Patroli Mulai *</label> <input type="time" class="form-input patrol-start" required></div>
                     <div><label class="form-label">Jam Patroli Selesai *</label> <input type="time" class="form-input patrol-end" required></div>
                 </div>
+                <div style="margin-bottom: 16px;"><label class="form-label">Gambar Patroli</label> <input type="file" name="patrol_images[]" class="form-input patrol-image" accept="image/*"></div>
                 <div style="margin-bottom: 16px;"><label class="form-label">Uraian Keterangan Patroli *</label> <textarea class="form-textarea patrol-uraian" required placeholder="Uraian..."></textarea></div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
                     <div><label class="form-label">Visitor</label> <input type="text" class="form-input patrol-visitor" placeholder="Visitor"></div>
@@ -1345,6 +1347,7 @@
                     <b>Patroli #${p.no} (${p.jam_mulai} - ${p.jam_selesai})</b><br>
                     ${p.uraian}<br>
                     <small>Vis: ${p.visitor} | Eksp: ${p.ekspedisi}</small>
+                    ${p.gambar ? `<br><img src="/storage/patrols/${p.gambar}" style="max-width: 200px; border: 1px solid #ddd; margin-top: 8px;">` : ''}
                 </div>
             `).join('');
 

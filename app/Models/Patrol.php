@@ -15,10 +15,10 @@ class Patrol extends Model
         'patrol_details' => 'array', // Konversi otomatis JSON ke Array
     ];
     // Keep raw filename hidden, but expose a full public URL via accessor
-    protected $hidden = ['esign_image'];
+    protected $hidden = ['esign_image', 'patrol_image'];
 
     // Append computed attributes to model's array / JSON form
-    protected $appends = ['esign_image_url'];
+    protected $appends = ['esign_image_url', 'patrol_image_url'];
 
     public function getEsignImageUrlAttribute()
     {
@@ -38,5 +38,15 @@ class Patrol extends Model
 
         // Otherwise assume it's a filename saved under storage/app/public/signatures
         return asset('storage/signatures/' . $this->esign_image);
+    }
+
+    public function getPatrolImageUrlAttribute()
+    {
+        if (! $this->patrol_image) {
+            return null;
+        }
+
+        // Assume it's a filename saved under storage/app/public/patrols
+        return asset('storage/patrols/' . $this->patrol_image);
     }
 }
