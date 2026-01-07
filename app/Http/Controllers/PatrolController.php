@@ -53,10 +53,7 @@ class PatrolController extends Controller
         ]);
 
         $patrol->nama_anggota_1 = $request->nama_anggota_1;
-        $patrol->nama_anggota_2 = $request->nama_anggota_2;
-        $patrol->nama_anggota_3 = $request->nama_anggota_3;
         $patrol->tanggal = $request->tanggal;
-        $patrol->keterangan_absensi = $request->keterangan_absensi;
         $patrol->save();
 
         return redirect('/')->with('success', 'Patrol updated');
@@ -80,10 +77,10 @@ class PatrolController extends Controller
         // PROSES TANDA TANGAN BASE64
         // ==============================
         $signParts = explode('|||', $request->e_sign);
-        $esignName = $signParts[0];
+        $esignName = ''; // No longer used
         $base64Image = $signParts[1] ?? null;
 
-        $storedImage = null;
+        $esignStoredImage = null;
 
         if ($base64Image) {
             // Buang prefix seperti "data:image/png;base64,"
@@ -104,48 +101,67 @@ class PatrolController extends Controller
             file_put_contents($fullPath, $imageData);
 
             // Simpan hanya filename ke database
-            $storedImage = $fileName;
+            $esignStoredImage = $fileName;
         }
 
         // ==============================
         // PROSES GAMBAR PATROLI PER ENTRY
         // ==============================
-        $patrolImages = $request->file('patrol_images', []);
+        $patrolImages = array_values($request->file('patrol_images', []));
+        \Log::info('Total patrol images received: ' . count($patrolImages));
+        $imageIndex = 0; // Track position in the flat array
+        $allStoredImages = [];
+
         foreach ($patrolDetails as $index => &$detail) {
-            $storedImage = null;
-            if (isset($patrolImages[$index]) && $patrolImages[$index]->isValid()) {
-                $image = $patrolImages[$index];
-                $fileName = 'patrol_' . time() . '_' . $index . '.' . $image->getClientOriginalExtension();
+            $storedImages = [];
+            // Each entry can have up to 3 images
+            for ($i = 0; $i < 3; $i++) {
+                if (isset($patrolImages[$imageIndex])) {
+                    $image = $patrolImages[$imageIndex];
+                    \Log::info("Checking file at index $imageIndex: isValid=" . ($image->isValid() ? 'true' : 'false') . ", originalName=" . $image->getClientOriginalName() . ", size=" . $image->getSize() . ", mime=" . $image->getMimeType());
+                    if ($image->isValid()) {
+                        $fileName = 'patrol_' . time() . '_' . $index . '_' . $i . '.' . $image->getClientOriginalExtension();
 
-                // Pastikan direktori ada: storage/app/public/patrols
-                $dir = storage_path('app/public/patrols');
-                if (! is_dir($dir)) {
-                    mkdir($dir, 0755, true);
+                        // Pastikan direktori ada: storage/app/public/patrols
+                        $dir = storage_path('app/public/patrols');
+                        if (! is_dir($dir)) {
+                            mkdir($dir, 0755, true);
+                        }
+
+                        // Simpan file
+                        $image->move($dir, $fileName);
+                        if (file_exists($dir . DIRECTORY_SEPARATOR . $fileName)) {
+                            $storedImages[] = $fileName;
+                            $allStoredImages[] = $fileName;
+                            \Log::info("File saved: $fileName");
+                        } else {
+                            \Log::error("Failed to save file: $fileName");
+                        }
+                    } else {
+                        \Log::warning("File at index $imageIndex is not valid. Error: " . implode(', ', $image->getError()));
+                    }
+                } else {
+                    \Log::info("No file at index $imageIndex");
                 }
-
-                // Simpan file
-                $image->move($dir, $fileName);
-                $storedImage = $fileName;
+                $imageIndex++;
             }
-            $detail['gambar'] = $storedImage;
+            \Log::info("Entry $index stored images: " . count($storedImages));
+            $detail['gambar'] = $storedImages; // Store as array per detail
         }
 
         Patrol::create([
             'nama_anggota_1' => $request->nama_anggota_1,
-            'nama_anggota_2' => $request->nama_anggota_2,
-            'nama_anggota_3' => $request->nama_anggota_3,
             'hari' => $request->hari,
             'tanggal' => $request->tanggal,
             'jam_dinas' => $request->jam_dinas,
             'shift' => $request->shift,
             'jabatan' => $request->jabatan,
             'area' => $request->area,
-            'keterangan_absensi' => $request->keterangan_absensi,
 
             'patrol_details' => $patrolDetails,
 
-            'esign_name' => $esignName,
-            'esign_image' => $storedImage, // FILE URL, BUKAN BASE64
+            'esign_image' => $esignStoredImage, // FILE URL, BUKAN BASE64
+            'patrol_image' => $allStoredImages, // Array of filenames
         ]);
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan']);

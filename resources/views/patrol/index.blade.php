@@ -273,6 +273,65 @@
             transform: scale(1);
         }
 
+        /* Image Modal Styles */
+        .image-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .image-modal-overlay.show {
+            opacity: 1;
+        }
+
+        .image-modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-modal-content img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .image-modal-close:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -537,18 +596,12 @@
                     <div class="form-section">
                         <h2
                             style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #1f2937; border-bottom: 3px solid #3b82f6; padding-bottom: 10px;">
-                            👥 Data Shift & Anggota Tim</h2>
+                            👥 Data Petugas</h2>
                         <div
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 20px;">
-                            <div><label for="nama1" class="form-label">Nama Anggota 1 *</label> <input type="text"
+                            <div><label for="nama1" class="form-label">Nama Petugas*</label> <input type="text"
                                     id="nama1" name="nama_anggota_1" class="form-input" required
                                     placeholder="Masukkan nama anggota 1"></div>
-                            <div><label for="nama2" class="form-label">Nama Anggota 2 *</label> <input type="text"
-                                    id="nama2" name="nama_anggota_2" class="form-input" required
-                                    placeholder="Masukkan nama anggota 2"></div>
-                            <div><label for="nama3" class="form-label">Nama Anggota 3 *</label> <input type="text"
-                                    id="nama3" name="nama_anggota_3" class="form-input" required
-                                    placeholder="Masukkan nama anggota 3"></div>
                         </div>
                         <div
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
@@ -595,12 +648,12 @@
                                     <select id="area" name="area" class="form-select" required style="flex:1;">
                                         <option value="">Pilih Area</option>
                                         <option value="Area Pabrik">Area Pabrik</option>
-                                        <!-- <option value="Area Produksi">Area Produksi</option>
+                                        <option value="Area Produksi">Area Produksi</option>
                                         <option value="Area Gudang">Area Gudang</option>
                                         <option value="Area Kantor">Area Kantor</option>
                                         <option value="Area Parkir">Area Parkir</option>
                                         <option value="Area Perimeter">Area Perimeter</option>
-                                        <option value="Pintu Gerbang">Pintu Gerbang</option> -->
+                                        <option value="Pintu Gerbang">Pintu Gerbang</option>
                                         <option value="__other_area__">Lainnya...</option>
                                     </select>
 
@@ -612,42 +665,21 @@
                                 </div>
                                 <small style="color:#6b7280; display:block; margin-top:6px;">Pilih "Lainnya..." untuk menambah baru.</small>
                             </div>
-                            <div>
-                                <label for="absensiSelect" class="form-label">Keterangan Absensi</label>
-                                <div style="display:flex; gap:8px; align-items:center;">
-                                    <select id="absensiSelect" name="keterangan_absensi" class="form-select" required style="flex:1;">
-                                        <option value="">Pilih Status</option>
-                                        <option value="Hadir Lengkap">Hadir Lengkap</option>
-                                        <option value="Hadir 2 Orang">Hadir 2 Orang</option>
-                                        <option value="Hadir 1 Orang">Hadir 1 Orang</option>
-                                        <option value="Ada yang Sakit">Ada yang Sakit</option>
-                                        <option value="Ada yang Izin">Ada yang Izin</option>
-                                        <option value="__other__">Lainnya...</option>
-                                    </select>
-
-                                    <div id="absensiCustomWrap" style="display:none; gap:8px; align-items:center;">
-                                        <input type="text" id="absensiCustom" class="form-input" placeholder="Ketik keterangan lain" style="min-width:180px;" />
-                                    </div>
-
-                                    <button type="button" class="btn-secondary" onclick="addAbsensiOption()" title="Tambah opsi">＋</button>
-                                </div>
-                                <small style="color:#6b7280; display:block; margin-top:6px;">Pilih "Lainnya..." untuk menambah baru.</small>
-                            </div>
                         </div>
                     </div>
 
                     <div class="form-section">
                         <h2
                             style="font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #1f2937; border-bottom: 3px solid #10b981; padding-bottom: 10px;">
-                            🚶 Detail Patroli & Pelaporan</h2>
+                            🚶 Detail Patroli</h2>
 
                         <div id="patrolEntriesContainer">
                             <div class="patrol-entry"
                                 style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #10b981;">
-                                <div
+                                <!-- <div
                                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                                     <h4 style="font-weight: 600; color: #1f2937; font-size: 16px;">📍 Patroli #1</h4>
-                                </div>
+                                </div> -->
                                 <div
                                     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
                                     <div><label class="form-label">Jam Patroli Mulai *</label> <input type="time"
@@ -655,36 +687,38 @@
                                     <div><label class="form-label">Jam Patroli Selesai *</label> <input type="time"
                                             class="form-input patrol-end" required></div>
                                 </div>
-                                <div style="margin-bottom: 16px;"><label class="form-label">Gambar Patroli</label> <input type="file" name="patrol_images[]" class="form-input patrol-image" accept="image/*"></div>
+                                <div style="margin-bottom: 16px;">
+                                    <label class="form-label">Gambar Patroli (maksimal 3)</label>
+                                    <input type="file" name="patrol_images[]" class="form-input patrol-image" accept="image/*" multiple onchange="previewImages(this)" id="patrolImageInput1" style="display: none;">
+                                    <button type="button" id="selectImageBtn1" class="btn-secondary" onclick="document.getElementById('patrolImageInput1').click()" style="margin-top: 8px;">📷 Pilih Gambar</button>
+                                </div>
+                                <div class="image-preview" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;"></div>
                                 <div style="margin-bottom: 16px;"><label class="form-label">Uraian Keterangan Patroli
                                         *</label> <textarea class="form-textarea patrol-uraian" required
                                         placeholder="Tuliskan laporan hasil patroli..."></textarea></div>
-                                <div
+                                <!-- <div
                                     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
                                     <div><label class="form-label">ID Card Visitor</label> <input type="text"
                                             class="form-input patrol-visitor" placeholder="Jumlah/Nama"></div>
                                     <div><label class="form-label">ID Card Ekspedisi</label> <input type="text"
                                             class="form-input patrol-ekspedisi" placeholder="Nama ekspedisi"></div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
 
-                        <div style="margin-bottom: 24px; text-align: center;">
+                        <!-- <div style="margin-bottom: 24px; text-align: center;">
                             <button type="button" class="btn-secondary" onclick="addPatrolEntry()"
                                 style="padding: 10px 24px; font-size: 15px;"> ➕ Tambah Waktu Patroli </button>
-                        </div>
+                        </div> -->
 
                         <div
                             style="background: #fffbeb; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b;">
                             <h4 style="font-weight: 600; color: #1f2937; font-size: 16px; margin-bottom: 16px;">✍️ Tanda
                                 Tangan Digital (E-Sign) *</h4>
-                            <div style="margin-bottom: 12px;"><label for="eSignName" class="form-label">Nama
-                                    Penandatangan</label> <input type="text" id="eSignName" name="esign_name"
-                                    class="form-input" required placeholder="Masukkan nama penandatangan"></div>
                             <div style="position: relative;">
-                                <label class="form-label">Tanda Tangan</label>
+                                <!-- <label class="form-label">Tanda Tangan</label> -->
                                 <canvas id="signatureCanvas" class="signature-canvas" width="600" height="200"></canvas>
-                                <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+                                <div style="margin-top: 8px; display: flex  ; gap: 8px; flex-wrap: wrap;">
                                     <button type="button" class="btn-secondary" onclick="clearSignature()">🗑️ Hapus
                                         Tanda Tangan</button>
                                     <span style="font-size: 12px; color: #6b7280; display: flex; align-items: center;">
@@ -762,13 +796,11 @@
                             <thead>
                                 <tr>
                                     <th style="width: 50px;">No</th>
-                                    <th>Nama Pelapor</th>
-                                    <th>Anggota Tim</th>
+                                    <th>Nama Petugas</th>
                                     <th>Tanggal</th>
                                     <th>Shift</th>
                                     <th>Area</th>
                                     <th>Waktu Patroli</th>
-                                    <th>Status</th>
                                     <th style="width: 150px;">Aksi</th>
                                 </tr>
                             </thead>
@@ -799,6 +831,14 @@
                         <button onclick="closeModal()" class="btn-secondary">Tutup</button> <button id="modalDeleteBtn"
                             class="btn-danger">🗑️ Hapus Data</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Image Modal for enlarged view -->
+            <div id="imageModal" class="image-modal-overlay" onclick="closeImageModal()">
+                <button class="image-modal-close" onclick="closeImageModal()">×</button>
+                <div class="image-modal-content">
+                    <img id="enlargedImage" src="" alt="Gambar diperbesar">
                 </div>
             </div>
 
@@ -887,6 +927,118 @@
 
         function clearSignature() { if (!ctx) return; ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight); signatureData = ''; }
 
+        let patrolFiles = []; // Array of arrays for files per entry
+
+        function previewImages(input) {
+            const entries = document.querySelectorAll('.patrol-entry');
+            const entryIndex = Array.from(entries).indexOf(input.closest('.patrol-entry'));
+            const previewContainer = input.closest('.patrol-entry').querySelector('.image-preview');
+
+            // Get existing files for this entry
+            let existingFiles = patrolFiles[entryIndex] || [];
+
+            // Convert FileList to Array and append new files
+            const newFiles = Array.from(input.files);
+            existingFiles = existingFiles.concat(newFiles);
+
+            // Limit to 3 files
+            if (existingFiles.length > 3) {
+                showToast('Maksimal 3 gambar yang bisa diupload!', true);
+                existingFiles = existingFiles.slice(0, 3);
+            }
+
+            // Validate file types
+            existingFiles = existingFiles.filter(file => {
+                if (!file.type.startsWith('image/')) {
+                    showToast('Hanya file gambar yang diperbolehkan!', true);
+                    return false;
+                }
+                return true;
+            });
+
+            // Update stored files
+            patrolFiles[entryIndex] = existingFiles;
+
+            regeneratePreview(entryIndex);
+            updateButton(entryIndex);
+
+            // Clear input value to allow re-selection
+            // input.value = '';
+        }
+
+        function regeneratePreview(entryIndex) {
+            const previewContainer = document.querySelectorAll('.patrol-entry')[entryIndex].querySelector('.image-preview');
+            const existingFiles = patrolFiles[entryIndex] || [];
+            previewContainer.innerHTML = '';
+            existingFiles.forEach((f, idx) => {
+                const r = new FileReader();
+                r.onload = function(ev) {
+                    const ic = document.createElement('div');
+                    ic.style.position = 'relative';
+                    ic.style.display = 'inline-block';
+                    ic.style.marginRight = '8px';
+                    ic.style.marginBottom = '8px';
+
+                    const im = document.createElement('img');
+                    im.src = ev.target.result;
+                    im.style.width = '80px';
+                    im.style.height = '80px';
+                    im.style.objectFit = 'cover';
+                    im.style.border = '1px solid #ddd';
+                    im.style.borderRadius = '4px';
+                    im.style.cursor = 'pointer';
+                    im.onclick = function() {
+                        openImageModal(ev.target.result);
+                    };
+
+                    const rb = document.createElement('button');
+                    rb.innerHTML = '×';
+                    rb.style.position = 'absolute';
+                    rb.style.top = '-5px';
+                    rb.style.right = '-5px';
+                    rb.style.background = 'red';
+                    rb.style.color = 'white';
+                    rb.style.border = 'none';
+                    rb.style.borderRadius = '50%';
+                    rb.style.width = '20px';
+                    rb.style.height = '20px';
+                    rb.style.cursor = 'pointer';
+                    rb.style.fontSize = '14px';
+                    rb.style.lineHeight = '18px';
+                    rb.onclick = function(evt) {
+                        evt.stopPropagation();
+                        existingFiles.splice(idx, 1);
+                        patrolFiles[entryIndex] = existingFiles;
+                        regeneratePreview(entryIndex);
+                        updateButton(entryIndex);
+                    };
+
+                    ic.appendChild(im);
+                    ic.appendChild(rb);
+                    previewContainer.appendChild(ic);
+                };
+                r.readAsDataURL(f);
+            });
+        }
+
+        function updateButton(index) {
+            const btn = document.getElementById('selectImageBtn' + (index + 1));
+            const files = patrolFiles[index] || [];
+            if (files.length > 2) {
+                btn.textContent = '❌ Batal Semua Gambar';
+                btn.onclick = () => {
+                    patrolFiles[index] = [];
+                    const entry = document.querySelectorAll('.patrol-entry')[index];
+                    const container = entry.querySelector('.image-preview');
+                    container.innerHTML = '';
+                    updateButton(index);
+                };
+            } else {
+                btn.textContent = '📷 Pilih Gambar';
+                btn.onclick = () => document.getElementById('patrolImageInput' + (index + 1)).click();
+            }
+        }
+
         // Debounce helper
         function debounce(fn, wait) {
             let t;
@@ -915,7 +1067,12 @@
                     <div><label class="form-label">Jam Patroli Mulai *</label> <input type="time" class="form-input patrol-start" required></div>
                     <div><label class="form-label">Jam Patroli Selesai *</label> <input type="time" class="form-input patrol-end" required></div>
                 </div>
-                <div style="margin-bottom: 16px;"><label class="form-label">Gambar Patroli</label> <input type="file" name="patrol_images[]" class="form-input patrol-image" accept="image/*"></div>
+                <div style="margin-bottom: 16px;">
+                    <label class="form-label">Gambar Patroli (maksimal 3)</label>
+                    <input type="file" name="patrol_images[]" class="form-input patrol-image" accept="image/*" multiple onchange="previewImages(this)" id="patrolImageInput${patrolEntryCount}" style="display: none;">
+                    <button type="button" id="selectImageBtn${patrolEntryCount}" class="btn-secondary" onclick="document.getElementById('patrolImageInput${patrolEntryCount}').click()" style="margin-top: 8px;">📷 Pilih Gambar</button>
+                </div>
+                <div class="image-preview" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;"></div>
                 <div style="margin-bottom: 16px;"><label class="form-label">Uraian Keterangan Patroli *</label> <textarea class="form-textarea patrol-uraian" required placeholder="Uraian..."></textarea></div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
                     <div><label class="form-label">Visitor</label> <input type="text" class="form-input patrol-visitor" placeholder="Visitor"></div>
@@ -925,62 +1082,12 @@
         }
 
         function removePatrolEntry(btn) {
+            const entries = document.querySelectorAll('.patrol-entry');
+            const entryIndex = Array.from(entries).indexOf(btn.closest('.patrol-entry'));
+            patrolFiles.splice(entryIndex, 1); // Remove stored files for this entry
             btn.closest('.patrol-entry').remove();
             // Re-numbering logic could go here
         }
-
-        // Allow adding custom options to the absensi datalist
-        function addAbsensiOption() {
-            const select = document.getElementById('absensiSelect');
-            const customWrap = document.getElementById('absensiCustomWrap');
-            const customInput = document.getElementById('absensiCustom');
-            if (!select) return;
-
-            // If user selected 'Lainnya...' and filled custom input, add it as new option
-            if (customWrap && customWrap.style.display !== 'none') {
-                const val = (customInput.value || '').trim();
-                if (!val) { showToast('Masukkan nilai untuk ditambahkan', true); customInput.focus(); return; }
-
-                // check if exists (case-insensitive)
-                const exists = Array.from(select.options).some(o => o.value.toLowerCase() === val.toLowerCase());
-                if (exists) { showToast('Opsi sudah ada', true); select.value = val; customWrap.style.display = 'none'; customInput.value = ''; return; }
-
-                const opt = document.createElement('option');
-                opt.value = val;
-                opt.textContent = val;
-                // insert before the '__other__' option if present
-                const otherIndex = Array.from(select.options).findIndex(o => o.value === '__other__');
-                if (otherIndex >= 0) {
-                    select.add(opt, select.options[otherIndex]);
-                } else {
-                    select.add(opt);
-                }
-                select.value = val;
-                customInput.value = '';
-                customWrap.style.display = 'none';
-                showToast('Opsi ditambahkan');
-                return;
-            }
-
-            // If custom input not visible, focus select to pick or choose 'Lainnya...'
-            select.focus();
-        }
-
-        // Show/hide custom input when user selects '__other__'
-        (function attachAbsensiHandler(){
-            const select = document.getElementById('absensiSelect');
-            const customWrap = document.getElementById('absensiCustomWrap');
-            const customInput = document.getElementById('absensiCustom');
-            if (!select) return;
-            select.addEventListener('change', () => {
-                if (select.value === '__other__') {
-                    if (customWrap) customWrap.style.display = 'flex';
-                    if (customInput) customInput.focus();
-                } else {
-                    if (customWrap) customWrap.style.display = 'none';
-                }
-            });
-        })();
 
         // Area: show/hide custom input when user selects '__other_area__'
         (function attachAreaHandler(){
@@ -1065,15 +1172,21 @@
                     no: index + 1,
                     jam_mulai: entry.querySelector('.patrol-start').value,
                     jam_selesai: entry.querySelector('.patrol-end').value,
-                    uraian: entry.querySelector('.patrol-uraian').value,
-                    visitor: entry.querySelector('.patrol-visitor').value || '-',
-                    ekspedisi: entry.querySelector('.patrol-ekspedisi').value || '-'
+                    uraian: entry.querySelector('.patrol-uraian').value
                 });
             });
 
             const formData = new FormData(document.getElementById('patrolForm'));
+            // Append stored files from all entries in order
+            patrolFiles.forEach(filesArray => {
+                if (filesArray) {
+                    filesArray.forEach(file => {
+                        formData.append('patrol_images[]', file);
+                    });
+                }
+            });
             formData.append('patrol_data', JSON.stringify(patrolEntries));
-            formData.append('e_sign', document.getElementById('eSignName').value + '|||' + signatureData);
+            formData.append('e_sign', signatureData);
 
             try {
                 const res = await fetch('/api/patrols', {
@@ -1179,8 +1292,8 @@
             const shift = document.getElementById('filterShift').value;
 
             filteredData = allPatrolData.filter(r => {
-                const anggotaStr = [r.nama_anggota_1, r.nama_anggota_2, r.nama_anggota_3].filter(Boolean).join(' ').toLowerCase();
-                const matchSearch = !search || anggotaStr.includes(search) || r.area.toLowerCase().includes(search) || (r.esign_name || '').toLowerCase().includes(search);
+                const anggotaStr = (r.nama_anggota_1 || '').toLowerCase();
+                const matchSearch = !search || anggotaStr.includes(search) || r.area.toLowerCase().includes(search);
                 const matchDate = (!dateFrom || r.tanggal >= dateFrom) && (!dateTo || r.tanggal <= dateTo);
                 const matchArea = !area || r.area === area;
                 const matchShift = !shift || r.shift === shift;
@@ -1215,13 +1328,11 @@
                 return `
                     <tr>
                         <td>${start + i + 1}</td>
-                        <td>${r.esign_name || '-'}</td>
-                        <td>${[r.nama_anggota_1, r.nama_anggota_2, r.nama_anggota_3].filter(Boolean).join(' / ')}</td>
+                        <td>${r.nama_anggota_1}</td>
                         <td>${formattedDate}</td>
                         <td><span class="badge badge-info">${r.shift}</span></td>
                         <td>${r.area}</td>
                         <td>${summary}</td>
-                        <td><span class="badge ${badge}">${r.keterangan_absensi}</span></td>
                         <td><button onclick="viewDetail(${r.id})" class="btn-info" style="padding: 6px;">👁️ Detail</button></td>
                     </tr>`;
             }).join('');
@@ -1285,7 +1396,7 @@
             const dataToExport = (currentTab === 'history') ? filteredData : allPatrolData;
             if (!dataToExport || dataToExport.length === 0) { showToast('Tidak ada data untuk diekspor', true); return; }
 
-            const headers = ['No', 'Pembuat Laporan', 'Anggota 1', 'Anggota 2', 'Anggota 3', 'Tanggal', 'Patroli', 'Shift', 'Waktu Patroli', 'Area', 'Status', 'Patroli Detail'];
+            const headers = ['No', 'Anggota 1', 'Tanggal', 'Patroli', 'Shift', 'Waktu Patroli', 'Area', 'Patroli Detail'];
 
             let html = `<!doctype html><html><head><meta charset="utf-8"></head><body>`;
             html += `<table border="1" style="border-collapse:collapse; width:100%;">`;
@@ -1299,10 +1410,6 @@
                 const shift = r.shift || '';
                 const area = r.area || '';
                 const anggota1 = r.nama_anggota_1 || '';
-                const anggota2 = r.nama_anggota_2 || '';
-                const anggota3 = r.nama_anggota_3 || '';
-                const status = r.keterangan_absensi || '';
-                const penandatangan = r.esign_name || '';
                 const patrols = r.patrol_details || [];
 
                 if (patrols && patrols.length > 0) {
@@ -1311,12 +1418,12 @@
                         const waktu = `${p.jam_mulai || ''} - ${p.jam_selesai || ''}`;
                         const uraian = (p.uraian || '').replace(/\r?\n/g, ' ');
                         // Build centered row following requested order
-                        const cells = [counter, penandatangan, anggota1, anggota2, anggota3, tanggal, patroliNo, shift, waktu, area, status, uraian];
+                        const cells = [counter, anggota1, tanggal, patroliNo, shift, waktu, area, uraian];
                         html += '<tr>' + cells.map(c => `<td style="padding:6px; text-align:center;">${c === null || c === undefined ? '' : String(c)}</td>`).join('') + '</tr>';
                         counter++;
                     });
                 } else {
-                    const cells = [counter, penandatangan, anggota1, anggota2, anggota3, tanggal, '', shift, '-', area, status, '-'];
+                    const cells = [counter, anggota1, tanggal, '', shift, '-', area, '-'];
                     html += '<tr>' + cells.map(c => `<td style="padding:6px; text-align:center;">${c === null || c === undefined ? '' : String(c)}</td>`).join('') + '</tr>';
                     counter++;
                 }
@@ -1344,20 +1451,18 @@
             const patrols = r.patrol_details || [];
             const patrolHtml = patrols.map(p => `
                 <div style="background: #f9fafb; padding: 12px; margin-bottom: 8px; border-left: 4px solid #10b981;">
-                    <b>Patroli #${p.no} (${p.jam_mulai} - ${p.jam_selesai})</b><br>
-                    ${p.uraian}<br>
-                    <small>Vis: ${p.visitor} | Eksp: ${p.ekspedisi}</small>
-                    ${p.gambar ? `<br><img src="/storage/patrols/${p.gambar}" style="max-width: 200px; border: 1px solid #ddd; margin-top: 8px;">` : ''}
+                    <b>Jam Patroli (${p.jam_mulai} - ${p.jam_selesai})</b><br>
+                    <b>Keterangan:</b><br>${p.uraian}<br>
+                    ${r.patrol_image_url && r.patrol_image_url.length > 0 ? '<br><div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">' + r.patrol_image_url.slice(0, 3).map(img => `<img src="${img}" style="max-width: 200px; max-height: 150px; border: 1px solid #ddd; border-radius: 4px; object-fit: cover; cursor: pointer;" onclick="openImageModal('${img}')" alt="Gambar patroli">`).join('') + '</div>' : ''}
                 </div>
             `).join('');
 
             document.getElementById('modalBody').innerHTML = `
                 <h3>${r.area} - ${r.shift}</h3>
-                <p><b>Tim:</b> ${r.nama_anggota_1}, ${r.nama_anggota_2}, ${r.nama_anggota_3}</p>
+                <p><b>Nama Petugas:</b> ${r.nama_anggota_1}</p>
                 <div style="margin: 10px 0;">${patrolHtml}</div>
                 <hr>
-                <p><b>TTD:</b> ${r.esign_name}</p>
-                ${r.esign_image_url ? `<img src="${r.esign_image_url}" style="max-width: 200px; border: 1px solid #ddd;">` : ''}
+                <b>Tanda Tangan:</b><br>${r.esign_image_url ? `<img src="${r.esign_image_url}" style="max-width: 200px; border: 1px solid #ddd;">` : ''}
             `;
 
             document.getElementById('modalDetail').classList.add('show');
@@ -1378,6 +1483,31 @@
             document.getElementById('modalDetail').classList.remove('show');
             setTimeout(() => document.getElementById('modalDetail').style.display = 'none', 300);
         }
+
+        // Image Modal Functions
+        function openImageModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const img = document.getElementById('enlargedImage');
+            img.src = imageSrc;
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        // Close image modal on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const imageModal = document.getElementById('imageModal');
+                if (imageModal && imageModal.classList.contains('show')) {
+                    closeImageModal();
+                }
+            }
+        });
 
         // Init
         window.onload = function () {

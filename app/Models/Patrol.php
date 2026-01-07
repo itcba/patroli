@@ -13,6 +13,7 @@ class Patrol extends Model
 
     protected $casts = [
         'patrol_details' => 'array', // Konversi otomatis JSON ke Array
+        'patrol_image' => 'array', // Array of image filenames
     ];
     // Keep raw filename hidden, but expose a full public URL via accessor
     protected $hidden = ['esign_image', 'patrol_image'];
@@ -42,11 +43,12 @@ class Patrol extends Model
 
     public function getPatrolImageUrlAttribute()
     {
-        if (! $this->patrol_image) {
-            return null;
+        if (! $this->patrol_image || !is_array($this->patrol_image)) {
+            return [];
         }
 
-        // Assume it's a filename saved under storage/app/public/patrols
-        return asset('storage/patrols/' . $this->patrol_image);
+        return array_map(function($filename) {
+            return asset('storage/patrols/' . $filename);
+        }, $this->patrol_image);
     }
 }
