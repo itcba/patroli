@@ -599,9 +599,9 @@
                             👥 Data Petugas</h2>
                         <div
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 20px;">
-                            <div><label for="nama1" class="form-label">Nama Petugas*</label> <input type="text"
+                            <div><label for="nama1" class="form-label">Nama Petugas *</label> <input type="text"
                                     id="nama1" name="nama_anggota_1" class="form-input" required
-                                    placeholder="Masukkan nama anggota 1"></div>
+                                    placeholder="Masukkan nama petugas"></div>
                         </div>
                         <div
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
@@ -642,29 +642,6 @@
                                     <option value="Anggota">Anggota</option>
                                 </select>
                             </div>
-                            <div>
-                                <label for="area" class="form-label">Area Patroli *</label>
-                                <div style="display:flex; gap:8px; align-items:center;">
-                                    <select id="area" name="area" class="form-select" required style="flex:1;">
-                                        <option value="">Pilih Area</option>
-                                        <option value="Area Pabrik">Area Pabrik</option>
-                                        <option value="Area Produksi">Area Produksi</option>
-                                        <option value="Area Gudang">Area Gudang</option>
-                                        <option value="Area Kantor">Area Kantor</option>
-                                        <option value="Area Parkir">Area Parkir</option>
-                                        <option value="Area Perimeter">Area Perimeter</option>
-                                        <option value="Pintu Gerbang">Pintu Gerbang</option>
-                                        <option value="__other_area__">Lainnya...</option>
-                                    </select>
-
-                                    <div id="areaCustomWrap" style="display:none; gap:8px; align-items:center;">
-                                        <input type="text" id="areaCustom" class="form-input" placeholder="Ketik area lain" style="min-width:180px;" />
-                                    </div>
-
-                                    <button type="button" class="btn-secondary" onclick="addAreaOption()" title="Tambah area">＋</button>
-                                </div>
-                                <small style="color:#6b7280; display:block; margin-top:6px;">Pilih "Lainnya..." untuk menambah baru.</small>
-                            </div>
                         </div>
                     </div>
 
@@ -687,6 +664,30 @@
                                     <div><label class="form-label">Jam Patroli Selesai *</label> <input type="time"
                                             class="form-input patrol-end" required></div>
                                 </div>
+                                <div>
+                                <label for="area" class="form-label">Area Patroli *</label>
+                                <div style="display:flex; gap:8px; align-items:center;">
+                                    <select id="area" name="area" class="form-select" required style="flex:1;">
+                                        <option value="">Pilih Area</option>
+                                        <option value="Area Pabrik">Area Pabrik</option>
+                                        <option value="Area Produksi">Area Produksi</option>
+                                        <option value="Area Gudang">Area Gudang</option>
+                                        <option value="Area Kantor">Area Kantor</option>
+                                        <option value="Area Parkir">Area Parkir</option>
+                                        <option value="Area Perimeter">Area Perimeter</option>
+                                        <option value="Pintu Gerbang">Pintu Gerbang</option>
+                                        <option value="__other_area__">Lainnya...</option>
+                                    </select>
+        
+                                    <div id="areaCustomWrap" style="display:none; gap:8px; align-items:center;">
+                                        <input type="text" id="areaCustom" class="form-input" placeholder="Ketik area lain" style="min-width:180px;" />
+                                    </div>
+        
+                                    <button type="button" class="btn-secondary" onclick="addAreaOption()" title="Tambah area">＋</button>
+                                </div>
+                                <small style="color:#6b7280; display:block; margin-top:6px;">Pilih "Lainnya..." untuk menambah baru.</small>
+                            </div>
+                            <br>
                                 <div style="margin-bottom: 16px;">
                                     <label class="form-label">Gambar Patroli (maksimal 3)</label>
                                     <input type="file" name="patrol_images[]" class="form-input patrol-image" accept="image/*" multiple onchange="previewImages(this)" id="patrolImageInput1" style="display: none;">
