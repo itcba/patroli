@@ -76,9 +76,8 @@ class PatrolController extends Controller
         // ==============================
         // PROSES TANDA TANGAN BASE64
         // ==============================
-        $signParts = explode('|||', $request->e_sign);
         $esignName = ''; // No longer used
-        $base64Image = $signParts[1] ?? null;
+        $base64Image = $request->e_sign;
 
         $esignStoredImage = null;
 
@@ -86,6 +85,10 @@ class PatrolController extends Controller
             // Buang prefix seperti "data:image/png;base64,"
             $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
             $imageData = base64_decode($base64Image);
+
+            if ($imageData === false) {
+                throw new \Exception('Invalid base64 data for e-signature');
+            }
 
             // Nama file unik
             $fileName = 'sign_' . time() . '.png';
@@ -102,6 +105,10 @@ class PatrolController extends Controller
 
             // Simpan hanya filename ke database
             $esignStoredImage = $fileName;
+        }
+
+        if (!$esignStoredImage) {
+            throw new \Exception('Failed to process e-signature image');
         }
 
         // ==============================
