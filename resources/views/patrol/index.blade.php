@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Favicon: use the existing `public/favicon.ico` for reliable serving -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <title>Form Patroli Keamanan Security</title>
+    <title>Patroli Keamanan Pabrik</title>
 
     {{-- Muat Tailwind & JS via Vite --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -538,18 +538,17 @@
     <div
         style="width: 100%; min-height: 100vh; background: linear-gradient(135deg, var(--blue-700) 0%, var(--blue-500) 100%); padding: 28px 20px;">  <div style="max-width: 1400px; margin: 0 auto; position:relative;">
             <header style="text-align: center; margin-bottom: 30px; padding-top:8px;">
-                <h1 id="mainTitle" style="color: white; font-size: 34px; margin-bottom: 6px; font-weight: 800;">Form
-                    Patroli Keamanan</h1>
-                <p id="companyName" style="color: rgba(255,255,255,0.95); font-size: 16px;">PT CBA Chemical Industry
-                    Pabrik</p>
+                <h1 id="mainTitle" style="color: white; font-size: 34px; margin-bottom: 6px; font-weight: 800;">
+                    Patroli Keamanan Pabrik</h1>
+                <p id="companyName" style="color: rgba(255,255,255,0.95); font-size: 16px;">PT CBA Chemical Industry</p>
             </header>
 
             <div
                 style="margin-bottom: 20px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <button class="tab-button active" id="tabForm" onclick="switchTab('form')">📝 Form Input</button>
+                    <button class="tab-button active" id="tabForm" onclick="switchTab('form')">📝 Form Patroli</button>
                     @if(auth()->check() && auth()->user()->role === 'admin')
-                        <button class="tab-button" id="tabHistory" onclick="switchTab('history')">📋 Riwayat Data</button>
+                        <button class="tab-button" id="tabHistory" onclick="switchTab('history')">📋 Riwayat Patroli</button>
                     @endif
                 </div>
 
@@ -620,8 +619,6 @@
                             </div>
                             <div><label for="tanggal" class="form-label">Tanggal *</label> <input type="date"
                                     id="tanggal" name="tanggal" class="form-input" required></div>
-                            <div><label for="jamDinas" class="form-label">Jam Dinas *</label> <input type="time"
-                                    id="jamDinas" name="jam_dinas" class="form-input" required></div>
                             <div>
                                 <label for="shift" class="form-label">Shift *</label>
                                 <select id="shift" name="shift" class="form-select" required>
@@ -689,7 +686,7 @@
                             </div>
                             <br>
                                 <div style="margin-bottom: 16px;">
-                                    <label class="form-label">Gambar Patroli (maksimal 3)</label>
+                                    <label class="form-label">Gambar Patroli (maksimal 5)</label>
                                     <input type="file" name="patrol_images[]" class="form-input patrol-image" accept="image/*" multiple onchange="previewImages(this)" id="patrolImageInput1" style="display: none;">
                                     <button type="button" id="selectImageBtn1" class="btn-secondary" onclick="document.getElementById('patrolImageInput1').click()" style="margin-top: 8px;">📷 Pilih Gambar</button>
                                 </div>
@@ -754,12 +751,12 @@
                             <label class="form-label" style="font-size: 12px;">Area</label>
                             <select id="filterArea" class="form-select" onchange="filterAndRenderHistory()">
                                 <option value="">Area Pabrik</option>
-                                <!-- <option value="Area Produksi">Area Produksi</option>
+                                <option value="Area Produksi">Area Produksi</option>
                                 <option value="Area Gudang">Area Gudang</option>
                                 <option value="Area Kantor">Area Kantor</option>
                                 <option value="Area Parkir">Area Parkir</option>
                                 <option value="Area Perimeter">Area Perimeter</option>
-                                <option value="Pintu Gerbang">Pintu Gerbang</option> -->
+                                <option value="Pintu Gerbang">Pintu Gerbang</option>
                             </select>
                         </div>
                         <div>
@@ -843,6 +840,21 @@
                 </div>
             </div>
 
+            <!-- Delete Confirmation Modal -->
+            <div id="deleteConfirmModal" class="modal-overlay" onclick="closeDeleteConfirmModal()">
+                <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 400px;">
+                    <div style="padding: 24px; text-align: center;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🗑️</div>
+                        <h2 style="font-size: 20px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">Konfirmasi Hapus</h2>
+                        <p style="color: #6b7280; margin-bottom: 24px;">Apakah Anda yakin ingin menghapus data patroli ini? Tindakan ini tidak dapat dibatalkan.</p>
+                        <div style="display: flex; gap: 12px; justify-content: center;">
+                            <button onclick="closeDeleteConfirmModal()" class="btn-secondary" style="flex: 1;">Batal</button>
+                            <button id="confirmDeleteBtn" class="btn-danger" style="flex: 1;">Hapus</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="toast" class="toast"></div>
 
             <!-- Footer -->
@@ -866,6 +878,43 @@
 
         // Server-side flag indicating whether the current user is an admin
         const isAdmin = @json(auth()->check() && auth()->user()->role === 'admin');
+
+        // --- Officer Data Auto-Save/Load ---
+        function getDayName(dateString) {
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const date = new Date(dateString);
+            return days[date.getDay()];
+        }
+
+        function saveOfficerData() {
+            const tanggal = document.getElementById('tanggal').value;
+            if (!tanggal) return;
+
+            const officerData = {
+                nama_anggota_1: document.getElementById('nama1').value,
+                hari: document.getElementById('hari').value,
+                shift: document.getElementById('shift').value,
+                jabatan: document.getElementById('jabatan').value,
+                area: document.getElementById('area').value
+            };
+
+            localStorage.setItem(`patrol_officer_${tanggal}`, JSON.stringify(officerData));
+        }
+
+        function loadOfficerData(tanggal) {
+            const saved = localStorage.getItem(`patrol_officer_${tanggal}`);
+            if (saved) {
+                const officerData = JSON.parse(saved);
+                document.getElementById('nama1').value = officerData.nama_anggota_1 || '';
+                document.getElementById('hari').value = officerData.hari || '';
+                document.getElementById('shift').value = officerData.shift || '';
+                document.getElementById('jabatan').value = officerData.jabatan || '';
+                document.getElementById('area').value = officerData.area || '';
+            } else {
+                // If no saved data, set hari based on date
+                document.getElementById('hari').value = getDayName(tanggal);
+            }
+        }
 
         // --- Signature Setup (Responsive + High-DPI) ---
         let canvas = document.getElementById('signatureCanvas');
@@ -942,10 +991,10 @@
             const newFiles = Array.from(input.files);
             existingFiles = existingFiles.concat(newFiles);
 
-            // Limit to 3 files
-            if (existingFiles.length > 3) {
-                showToast('Maksimal 3 gambar yang bisa diupload!', true);
-                existingFiles = existingFiles.slice(0, 3);
+            // Limit to 5 files
+            if (existingFiles.length > 5) {
+                showToast('Maksimal 5 gambar yang bisa diupload!', true);
+                existingFiles = existingFiles.slice(0, 5);
             }
 
             // Validate file types
@@ -1025,7 +1074,7 @@
         function updateButton(index) {
             const btn = document.getElementById('selectImageBtn' + (index + 1));
             const files = patrolFiles[index] || [];
-            if (files.length > 2) {
+            if (files.length > 4) {
                 btn.textContent = '❌ Batal Semua Gambar';
                 btn.onclick = () => {
                     patrolFiles[index] = [];
@@ -1069,7 +1118,7 @@
                     <div><label class="form-label">Jam Patroli Selesai *</label> <input type="time" class="form-input patrol-end" required></div>
                 </div>
                 <div style="margin-bottom: 16px;">
-                    <label class="form-label">Gambar Patroli (maksimal 3)</label>
+                    <label class="form-label">Gambar Patroli (maksimal 5)</label>
                     <input type="file" name="patrol_images[]" class="form-input patrol-image" accept="image/*" multiple onchange="previewImages(this)" id="patrolImageInput${patrolEntryCount}" style="display: none;">
                     <button type="button" id="selectImageBtn${patrolEntryCount}" class="btn-secondary" onclick="document.getElementById('patrolImageInput${patrolEntryCount}').click()" style="margin-top: 8px;">📷 Pilih Gambar</button>
                 </div>
@@ -1397,7 +1446,7 @@
             const dataToExport = (currentTab === 'history') ? filteredData : allPatrolData;
             if (!dataToExport || dataToExport.length === 0) { showToast('Tidak ada data untuk diekspor', true); return; }
 
-            const headers = ['No', 'Anggota 1', 'Tanggal', 'Patroli', 'Shift', 'Waktu Patroli', 'Area', 'Patroli Detail'];
+            const headers = ['No.', 'Anggota', 'Tanggal', 'Shift', 'Waktu Patroli', 'Area', 'Keterangan Patroli'];
 
             let html = `<!doctype html><html><head><meta charset="utf-8"></head><body>`;
             html += `<table border="1" style="border-collapse:collapse; width:100%;">`;
@@ -1415,16 +1464,15 @@
 
                 if (patrols && patrols.length > 0) {
                     patrols.forEach(p => {
-                        const patroliNo = p.no || '';
                         const waktu = `${p.jam_mulai || ''} - ${p.jam_selesai || ''}`;
                         const uraian = (p.uraian || '').replace(/\r?\n/g, ' ');
                         // Build centered row following requested order
-                        const cells = [counter, anggota1, tanggal, patroliNo, shift, waktu, area, uraian];
+                        const cells = [counter, anggota1, tanggal, shift, waktu, area, uraian];
                         html += '<tr>' + cells.map(c => `<td style="padding:6px; text-align:center;">${c === null || c === undefined ? '' : String(c)}</td>`).join('') + '</tr>';
                         counter++;
                     });
                 } else {
-                    const cells = [counter, anggota1, tanggal, '', shift, '-', area, '-'];
+                    const cells = [counter, anggota1, tanggal, shift, '-', area, '-'];
                     html += '<tr>' + cells.map(c => `<td style="padding:6px; text-align:center;">${c === null || c === undefined ? '' : String(c)}</td>`).join('') + '</tr>';
                     counter++;
                 }
@@ -1437,7 +1485,7 @@
             const a = document.createElement('a');
             a.href = url;
             const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-            a.download = `patrol-export-${ts}.xls`;
+            a.download = `cba-patroli-${ts}.xls`;
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -1454,7 +1502,7 @@
                 <div style="background: #f9fafb; padding: 12px; margin-bottom: 8px; border-left: 4px solid #10b981;">
                     <b>Jam Patroli (${p.jam_mulai} - ${p.jam_selesai})</b><br>
                     <b>Keterangan:</b><br>${p.uraian}<br>
-                    ${r.patrol_image_url && r.patrol_image_url.length > 0 ? '<br><div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">' + r.patrol_image_url.slice(0, 3).map(img => `<img src="${img}" style="max-width: 200px; max-height: 150px; border: 1px solid #ddd; border-radius: 4px; object-fit: cover; cursor: pointer;" onclick="openImageModal('${img}')" alt="Gambar patroli">`).join('') + '</div>' : ''}
+                    ${r.patrol_image_url && r.patrol_image_url.length > 0 ? '<br><div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">' + r.patrol_image_url.slice(0, 5).map(img => `<img src="${img}" style="max-width: 200px; max-height: 150px; border: 1px solid #ddd; border-radius: 4px; object-fit: cover; cursor: pointer;" onclick="openImageModal('${img}')" alt="Gambar patroli">`).join('') + '</div>' : ''}
                 </div>
             `).join('');
 
@@ -1470,12 +1518,8 @@
             document.getElementById('modalDetail').style.display = 'flex';
 
             // Delete handler
-            document.getElementById('modalDeleteBtn').onclick = async () => {
-                if (!confirm('Yakin hapus?')) return;
-                await fetch(`/api/patrols/${id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': csrfToken } });
-                closeModal();
-                fetchAllData();
-                showToast('Data dihapus');
+            document.getElementById('modalDeleteBtn').onclick = () => {
+                openDeleteConfirmModal(id);
             };
         }
 
@@ -1500,19 +1544,61 @@
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
-        // Close image modal on Escape key
+        // Delete Confirm Modal Functions
+        let deleteId = null;
+
+        function openDeleteConfirmModal(id) {
+            deleteId = id;
+            const modal = document.getElementById('deleteConfirmModal');
+            modal.classList.add('show');
+            modal.style.display = 'flex';
+        }
+
+        function closeDeleteConfirmModal() {
+            const modal = document.getElementById('deleteConfirmModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+            deleteId = null;
+        }
+
+        // Handle delete confirmation
+        document.getElementById('confirmDeleteBtn').onclick = async () => {
+            if (!deleteId) return;
+            await fetch(`/api/patrols/${deleteId}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': csrfToken } });
+            closeDeleteConfirmModal();
+            closeModal();
+            fetchAllData();
+            showToast('Data dihapus');
+        };
+
+        // Close modals on Escape key
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 const imageModal = document.getElementById('imageModal');
                 if (imageModal && imageModal.classList.contains('show')) {
                     closeImageModal();
                 }
+                const deleteModal = document.getElementById('deleteConfirmModal');
+                if (deleteModal && deleteModal.classList.contains('show')) {
+                    closeDeleteConfirmModal();
+                }
             }
         });
 
         // Init
         window.onload = function () {
-            // Optional: load data immediately if desired
+            // Set tanggal to today and load officer data
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal').value = today;
+            loadOfficerData(today);
+
+            // Add event listener for tanggal change
+            document.getElementById('tanggal').addEventListener('change', function() {
+                loadOfficerData(this.value);
+            });
+
+            // Add event listener for form submit to save officer data
+            document.getElementById('patrolForm').addEventListener('submit', saveOfficerData);
         };
     </script>
 </body>

@@ -121,8 +121,8 @@ class PatrolController extends Controller
 
         foreach ($patrolDetails as $index => &$detail) {
             $storedImages = [];
-            // Each entry can have up to 3 images
-            for ($i = 0; $i < 3; $i++) {
+            // Each entry can have up to 5 images
+            for ($i = 0; $i < 5; $i++) {
                 if (isset($patrolImages[$imageIndex])) {
                     $image = $patrolImages[$imageIndex];
                     \Log::info("Checking file at index $imageIndex: isValid=" . ($image->isValid() ? 'true' : 'false') . ", originalName=" . $image->getClientOriginalName() . ", size=" . $image->getSize() . ", mime=" . $image->getMimeType());
@@ -160,7 +160,6 @@ class PatrolController extends Controller
             'nama_anggota_1' => $request->nama_anggota_1,
             'hari' => $request->hari,
             'tanggal' => $request->tanggal,
-            'jam_dinas' => $request->jam_dinas,
             'shift' => $request->shift,
             'jabatan' => $request->jabatan,
             'area' => $request->area,

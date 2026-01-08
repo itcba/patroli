@@ -135,10 +135,9 @@
         style="width: 100%; min-height: 100vh; background: linear-gradient(135deg, var(--blue-700) 0%, var(--blue-500) 100%); padding: 28px 20px;">
         <div style="max-width: 1400px; margin: 0 auto; position:relative;">
             <header style="text-align: center; margin-bottom: 8px; padding-top:8px;">
-                <h1 id="mainTitle" style="color: white; font-size: 34px; margin-bottom: 6px; font-weight: 800;">Form
-                    Patroli Keamanan</h1>
-                <p id="companyName" style="color: rgba(255,255,255,0.95); font-size: 16px;">PT CBA Chemical Industry
-                    Pabrik</p>
+                <h1 id="mainTitle" style="color: white; font-size: 34px; margin-bottom: 6px; font-weight: 800;">
+                    Patroli Keamanan Pabrik</h1>
+                <p id="companyName" style="color: rgba(255,255,255,0.95); font-size: 16px;">PT CBA Chemical Industry</p>
             </header>
             <div style="display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:12px;">
                 <div class="card">
