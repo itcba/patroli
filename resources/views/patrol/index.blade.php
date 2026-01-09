@@ -1576,7 +1576,9 @@
                 <div style="background: #f9fafb; padding: 12px; margin-bottom: 8px; border-left: 4px solid #10b981;">
                     <b>Jam Patroli (${p.jam_mulai} - ${p.jam_selesai})</b><br>
                     <b>Keterangan:</b><br>${p.uraian}<br>
-                    ${r.patrol_image_url && r.patrol_image_url.length > 0 ? '<br><div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">' + r.patrol_image_url.slice(0, 5).map(img => `<img src="${img}" style="max-width: 200px; max-height: 150px; border: 1px solid #ddd; border-radius: 4px; object-fit: cover; cursor: pointer;" onclick="openImageModal('${img}')" alt="Gambar patroli">`).join('') + '</div>' : ''}
+                    ${r.patrol_image_url && r.patrol_image_url.length > 0 ? '<br><div style="background: #fff; padding: 12px; border: 2px solid #e5e7eb; border-radius: 6px; margin-top: 8px;">' + 
+                    r.patrol_image_url.slice(0, 5).map(img => `<div style="display: inline-block; margin: 6px; padding: 8px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px;">
+                    <img src="${img}" style="width: 80px; height: 80px; border-radius: 4px; object-fit: cover; cursor: pointer; display: block;" onclick="openImageModal('${img}')" alt="Gambar patroli"></div>`).join('') + '</div>' : ''}
                 </div>
             `).join('');
 
