@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Favicon: use the existing `public/favicon.ico` for reliable serving -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('patroli.png') }}">
     <title>Patroli Keamanan Pabrik</title>
 
     {{-- Muat Tailwind & JS via Vite --}}
@@ -55,7 +55,7 @@
             border: 2px solid #e5e7eb;
             border-radius: 6px;
             font-size: 14px;
-            transition: all 0.3s;
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
 
         .form-input:focus,
@@ -92,12 +92,15 @@
             border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.15s;
             font-size: 16px;
         }
 
         .btn-primary:hover {
             background: var(--blue-600);
+            transform: translateY(-1px);
+            will-change: transform;
+        }
             /* shadow-only hover: stronger shadow, no translation */
             box-shadow: 0 16px 36px rgba(14, 58, 120, 0.18);
         }
@@ -137,7 +140,7 @@
             border-radius: 6px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.15s, box-shadow 0.15s;
             font-size: 14px;
         }
 
@@ -154,7 +157,7 @@
             border-radius: 4px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.15s, box-shadow 0.15s;
             font-size: 13px;
         }
 
@@ -171,7 +174,7 @@
             border-radius: 6px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.15s, box-shadow 0.15s;
             font-size: 14px;
         }
 
@@ -187,7 +190,7 @@
             border-radius: 8px 8px 0 0;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.15s;
             margin-right: 8px;
             color: white;
         }
@@ -206,6 +209,7 @@
             border-top-color: transparent;
             animation: spin 0.6s linear infinite;
             margin-right: 8px;
+            will-change: transform;
         }
 
         @keyframes spin {
@@ -251,11 +255,13 @@
             z-index: 1000;
             padding: 20px;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.15s ease;
+            pointer-events: none;
         }
 
         .modal-overlay.show {
             opacity: 1;
+            pointer-events: auto;
         }
 
         .modal-content {
@@ -265,12 +271,13 @@
             width: 100%;
             max-height: 90%;
             overflow-y: auto;
-            transform: scale(0.9);
-            transition: transform 0.3s;
+            transform: scale(0.95) translateY(10px);
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
         }
 
         .modal-overlay.show .modal-content {
-            transform: scale(1);
+            transform: scale(1) translateY(0);
         }
 
         /* Image Modal Styles */
@@ -286,11 +293,13 @@
             justify-content: center;
             z-index: 2000;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.15s ease;
+            pointer-events: none;
         }
 
         .image-modal-overlay.show {
             opacity: 1;
+            pointer-events: auto;
         }
 
         .image-modal-content {
@@ -686,7 +695,7 @@
                             </div>
                             <br>
                                 <div style="margin-bottom: 16px;">
-                                    <label class="form-label">Gambar Patroli (maksimal 5)</label>
+                                    <label class="form-label">Gambar Patroli (Max 10mb)</label>
                                     <input type="file" name="patrol_images[]" class="form-input patrol-image" accept="image/*" multiple onchange="previewImages(this)" id="patrolImageInput1" style="display: none;">
                                     <button type="button" id="selectImageBtn1" class="btn-secondary" onclick="document.getElementById('patrolImageInput1').click()" style="margin-top: 8px;">📷 Pilih Gambar</button>
                                 </div>
@@ -979,7 +988,53 @@
 
         let patrolFiles = []; // Array of arrays for files per entry
 
-        function previewImages(input) {
+        // Compress image using Canvas API (client-side)
+        async function compressImage(file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Calculate new dimensions
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height = Math.round(height * maxWidth / width);
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width = Math.round(width * maxHeight / height);
+                                height = maxHeight;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Convert canvas to blob
+                        canvas.toBlob((blob) => {
+                            // Create new File from blob
+                            const compressedFile = new File(
+                                [blob],
+                                file.name,
+                                { type: 'image/jpeg', lastModified: Date.now() }
+                            );
+                            resolve(compressedFile);
+                        }, 'image/jpeg', quality);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function previewImages(input) {
             const entries = document.querySelectorAll('.patrol-entry');
             const entryIndex = Array.from(entries).indexOf(input.closest('.patrol-entry'));
             const previewContainer = input.closest('.patrol-entry').querySelector('.image-preview');
@@ -987,9 +1042,27 @@
             // Get existing files for this entry
             let existingFiles = patrolFiles[entryIndex] || [];
 
-            // Convert FileList to Array and append new files
+            // Convert FileList to Array and compress them
             const newFiles = Array.from(input.files);
-            existingFiles = existingFiles.concat(newFiles);
+            
+            // Show compression progress
+            showToast('Mengompresi gambar... (⏳ tunggu sebentar)', false);
+            
+            const compressedFiles = [];
+            for (const file of newFiles) {
+                try {
+                    const compressed = await compressImage(file);
+                    const originalSize = (file.size / 1024).toFixed(2);
+                    const compressedSize = (compressed.size / 1024).toFixed(2);
+                    console.log(`📦 Compressed: ${file.name} | ${originalSize}KB → ${compressedSize}KB`);
+                    compressedFiles.push(compressed);
+                } catch (err) {
+                    console.error('Compression failed:', err);
+                    compressedFiles.push(file); // Fallback to original
+                }
+            }
+            
+            existingFiles = existingFiles.concat(compressedFiles);
 
             // Limit to 5 files
             if (existingFiles.length > 5) {
@@ -1011,6 +1084,7 @@
 
             regeneratePreview(entryIndex);
             updateButton(entryIndex);
+            showToast('✅ Gambar siap diupload!', false);
 
             // Clear input value to allow re-selection
             // input.value = '';

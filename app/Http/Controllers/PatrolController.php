@@ -68,7 +68,7 @@ class PatrolController extends Controller
             'tanggal' => 'required',
             'patrol_data' => 'required',
             'e_sign' => 'required',
-            'patrol_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar per entry
+            'patrol_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240', // Validasi gambar per entry
         ]);
 
         $patrolDetails = json_decode($request->patrol_data, true);
